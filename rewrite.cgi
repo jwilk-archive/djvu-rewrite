@@ -3,6 +3,7 @@
 import cgitb
 cgitb.enable()
 
+import re
 import os
 import sys
 import glob
@@ -23,6 +24,8 @@ import djvu.const
 class DjVuSedError(Exception):
     pass
 
+is_valid_page_id = re.compile('^[a-zA-Z_+.-]+$').match
+
 query_string = os.getenv('QUERY_STRING', '')
 items = query_string.split('&')
 y0 = None
@@ -40,10 +43,9 @@ for i, item in enumerate(items):
         except ValueError:
             pass
     elif item.startswith('p='):
-        try:
-            page = int(item[2:], 10)
-        except ValueError:
-            pass
+        page = item[2:]
+        if is_valid_page_id(page):
+            raise ValueError
     elif item == 'djvuopts':
         break
 else:
@@ -51,7 +53,7 @@ else:
 djvuopts = items[i:]
 if not djvuopts:
     djvuopts = ['djvuopts']
-djvuopts += 'page=%d' % page,
+djvuopts += 'page=%s' % page,
 del items
 
 djvu_file_name = DJVU_FILES.keys()[0]
@@ -59,7 +61,7 @@ djvu_uri = urllib.basejoin(DJVU_BASE_URI, djvu_file_name)
 djvu_file_name = os.path.join(DJVU_BASE_LOCAL_DIR, djvu_file_name)
 
 djvused = subprocess.Popen(
-    ['djvused', '-e', 'select %d; print-txt' % page, djvu_file_name],
+    ['djvused', '-e', 'select %s; print-txt' % page, djvu_file_name],
     stdout=subprocess.PIPE, stderr=subprocess.PIPE
 )
 try:
