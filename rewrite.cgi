@@ -21,12 +21,12 @@ page = 1
 for i, item in enumerate(items):
     if item.startswith('l='):
         try:
-            y0 = int(item[2:], 10)
+            y0 = int(item[2:], 10) - 1
         except ValueError:
             pass
     elif item.startswith('w='):
         try:
-            x0 = int(item[2:], 10)
+            x0 = int(item[2:], 10) - 1
         except ValueError:
             pass
     elif item.startswith('p='):
