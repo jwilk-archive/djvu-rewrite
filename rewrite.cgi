@@ -8,6 +8,8 @@ import sys
 import glob
 import subprocess
 
+sys.path.extend(glob.glob(os.path.expanduser('~/lib/python%d.%d/site-packages/*/' % sys.version_info[:2])))
+
 import djvu.sexpr
 import djvu.const
 
