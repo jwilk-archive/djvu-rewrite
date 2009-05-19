@@ -7,6 +7,13 @@ import os
 import sys
 import glob
 import subprocess
+import urllib
+
+DJVU_BASE_LOCAL_DIR = os.path.expanduser('~/public_html/')
+DJVU_BASE_URI = '/~jw209508/'
+DJVU_FILES = {
+    'papers/thesis/thesis.djvu': 'Rozbudowa etc.'
+}
 
 sys.path.extend(glob.glob(os.path.expanduser('~/lib/python%d.%d/site-packages/*/' % sys.version_info[:2])))
 
@@ -44,10 +51,9 @@ if not djvuopts:
 djvuopts += 'page=%d' % page,
 del items
 
-djvu_file_name = 'papers/thesis/thesis.djvu'
-djvu_uri = '/~jw209508/' + djvu_file_name
-djvu_file_name = '~/public_html/' + djvu_file_name
-djvu_file_name = os.path.expanduser(djvu_file_name)
+djvu_file_name = DJVU_FILES.keys()[0]
+djvu_uri = urllib.basejoin(DJVU_BASE_URI, djvu_file_name)
+djvu_file_name = os.path.join(DJVU_BASE_LOCAL_DIR, djvu_file_name)
 
 djvused = subprocess.Popen(
     ['djvused', '-e', 'select %d; print-txt' % page, djvu_file_name],
