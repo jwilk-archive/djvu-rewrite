@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+from __future__ import with_statement
+
 import cgitb
 cgitb.enable()
 
@@ -9,12 +11,16 @@ import sys
 import glob
 import subprocess
 import urllib
+import django.conf
+import django.template as template
+django.conf.settings.configure()
 
 DJVU_BASE_LOCAL_DIR = os.path.expanduser('~/public_html/')
 DJVU_BASE_URI = '/~jw209508/'
 DJVU_FILES = {
     'papers/thesis/thesis.djvu': 'Rozbudowa etc.'
 }
+HTML_TEMPLATE = os.path.join(sys.path[0], 'rewrite-template.html')
 
 sys.path.extend(glob.glob(os.path.expanduser('~/lib/python%d.%d/site-packages/*/' % sys.version_info[:2])))
 
@@ -23,6 +29,9 @@ import djvu.const
 
 class DjVuSedError(Exception):
     pass
+
+with open(HTML_TEMPLATE, 'rt') as file:
+    html_template = template.Template(file.read())
 
 def get_text(djvu_file_name, page):
     djvused = subprocess.Popen(
