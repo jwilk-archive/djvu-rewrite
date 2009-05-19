@@ -73,7 +73,7 @@ def get_words(text):
 is_valid_page_id = re.compile('^[a-zA-Z_+.-]+$').match
 
 query_string = os.getenv('QUERY_STRING', '')
-
+djvu_file_name = None
 try:
     items = query_string.split('&')
     y0 = None
@@ -94,6 +94,8 @@ try:
             page = item[2:]
             if is_valid_page_id(page):
                 raise ValueError('Invalid page identifier')
+        elif item.startswith('f='):
+            djvu_file_name = urllib.unquote(item[2:]).decode('UTF-8', 'replace')
         elif item == 'djvuopts':
             break
     else:
@@ -104,10 +106,10 @@ try:
     djvuopts += 'page=%s' % page,
     del items
 
-    if y0 is None or x0 is None:
+    if y0 is None or x0 is None or djvu_file_name is None:
         raise NothingToRewrite
-
-    djvu_file_name = DJVU_FILES.keys()[0]
+    if djvu_file_name not in DJVU_FILES:
+        raise ValueError('Invalid DjVu file name')
     djvu_uri = urllib.basejoin(DJVU_BASE_URI, djvu_file_name)
     djvu_file_name = os.path.join(DJVU_BASE_LOCAL_DIR, djvu_file_name)
 
@@ -133,7 +135,7 @@ try:
 except Exception, exception:
     if isinstance(exception, NothingToRewrite):
         exception = None
-    context = template.Context(dict(exception=exception, fields=cgi.FieldStorage()))
+    context = template.Context(dict(exception=exception, files=DJVU_FILES, fields=cgi.FieldStorage()))
     content = html_template.render(context).encode('UTF-8')
     print 'Content-Type: text/html; charset=UTF-8'
     print

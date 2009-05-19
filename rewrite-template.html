@@ -15,6 +15,13 @@ div.error {
 {% endif %}
 <div>
 <form method='get' action='rewrite.cgi'>
+    <p><label for='f'>DjVu document:</label>
+    <select name='f'>
+    {% for file, description in files.iteritems %}
+    <option value='{{file}}'>{{description}}</option>
+    {% endfor %}
+    </select>
+    </p>
     <p><label for='p'>page:</label> <input id='p' name='p' type='text' value='{{fields.p.value}}'/></p>
     <p><label for='p'>line:</label> <input id='l' name='l' type='text' value='{{fields.l.value}}'/></p>
     <p><label for='p'>word:</label> <input id='w' name='w' type='text' value='{{fields.w.value}}'/></p>
