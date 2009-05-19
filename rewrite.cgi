@@ -28,6 +28,9 @@ sys.path.extend(glob.glob(os.path.expanduser('~/lib/python%d.%d/site-packages/*/
 import djvu.sexpr
 import djvu.const
 
+class NothingToRewrite(Exception):
+    pass
+
 class DjVuSedError(Exception):
     def __init__(self, message):
         if message.startswith('*** '):
@@ -81,16 +84,16 @@ try:
             try:
                 y0 = int(item[2:], 10) - 1
             except ValueError:
-                pass
+                raise ValueError('Invalid line number')
         elif item.startswith('w='):
             try:
                 x0 = int(item[2:], 10) - 1
             except ValueError:
-                pass
+                raise ValueError('Invalid word number')
         elif item.startswith('p='):
             page = item[2:]
             if is_valid_page_id(page):
-                raise ValueError
+                raise ValueError('Invalid page identifier')
         elif item == 'djvuopts':
             break
     else:
@@ -100,6 +103,9 @@ try:
         djvuopts = ['djvuopts']
     djvuopts += 'page=%s' % page,
     del items
+
+    if y0 is None or x0 is None:
+        raise NothingToRewrite
 
     djvu_file_name = DJVU_FILES.keys()[0]
     djvu_uri = urllib.basejoin(DJVU_BASE_URI, djvu_file_name)
@@ -118,9 +124,15 @@ try:
                 w = x1 - x0
                 djvuopts += 'highlight=%d,%d,%d,%d' % (x0, y0, w, h),
                 break
+            else:
+                raise IndexError('Word number out of range')
             break
+        else:
+            raise IndexError('Line number out of range')
     uri = '%s?%s' % (djvu_uri, '&'.join(djvuopts))
 except Exception, exception:
+    if isinstance(exception, NothingToRewrite):
+        exception = None
     context = template.Context(dict(exception=exception, fields=cgi.FieldStorage()))
     content = html_template.render(context).encode('UTF-8')
     print 'Content-Type: text/html; charset=UTF-8'
