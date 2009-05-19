@@ -29,7 +29,10 @@ import djvu.sexpr
 import djvu.const
 
 class DjVuSedError(Exception):
-    pass
+    def __init__(self, message):
+        if message.startswith('*** '):
+            message = message[4:]
+        Exception.__init__(self, message)
 
 with open(HTML_TEMPLATE, 'rt') as file:
     html_template = template.Template(file.read())
