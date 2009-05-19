@@ -20,6 +20,9 @@ sys.path.extend(glob.glob(os.path.expanduser('~/lib/python%d.%d/site-packages/*/
 import djvu.sexpr
 import djvu.const
 
+class DjVuSedError(Exception):
+    pass
+
 query_string = os.getenv('QUERY_STRING', '')
 items = query_string.split('&')
 y0 = None
@@ -59,7 +62,12 @@ djvused = subprocess.Popen(
     ['djvused', '-e', 'select %d; print-txt' % page, djvu_file_name],
     stdout=subprocess.PIPE, stderr=subprocess.PIPE
 )
-text = djvu.sexpr.Expression.from_stream(djvused.stdout)
+try:
+    text = djvu.sexpr.Expression.from_stream(djvused.stdout)
+except:
+    rc = djvused.wait()
+    if rc != 0:
+        raise DjVuSedError(djvused.stderr.readline().strip())
 
 def get_subexprs(text, type):
     if not isinstance(text, djvu.sexpr.ListExpression):
