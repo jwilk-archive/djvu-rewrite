@@ -3,11 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head><title></title></head>
 <body>
+{% if exception %}
+<div class='error'>
+{{ exception }}
+</div>
+{% endif %}
 <div>
 <form method='get' action='rewrite.cgi'>
-    <p><label for='p'>page:</label> <input id='p' name='p' type='text'/></p>
-    <p><label for='p'>line:</label> <input id='l' name='l' type='text'/></p>
-    <p><label for='p'>word:</label> <input id='w' name='w' type='text'/></p>
+    <p><label for='p'>page:</label> <input id='p' name='p' type='text' value='{{fields.p.value}}'/></p>
+    <p><label for='p'>line:</label> <input id='l' name='l' type='text' value='{{fields.l.value}}'/></p>
+    <p><label for='p'>word:</label> <input id='w' name='w' type='text' value='{{fields.w.value}}'/></p>
     <p><input type='submit'/></p>
 </form>
 </div>
