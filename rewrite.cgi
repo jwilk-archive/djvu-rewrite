@@ -24,6 +24,36 @@ import djvu.const
 class DjVuSedError(Exception):
     pass
 
+def get_text(djvu_file_name, page):
+    djvused = subprocess.Popen(
+        ['djvused', '-e', 'select %s; print-txt' % page, djvu_file_name],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    try:
+        return djvu.sexpr.Expression.from_stream(djvused.stdout)
+    except:
+        rc = djvused.wait()
+        if rc != 0:
+            raise DjVuSedError(djvused.stderr.readline().strip())
+
+def get_subexprs(text, type):
+    if not isinstance(text, djvu.sexpr.ListExpression):
+        return
+    if len(text) < 5:
+        return
+    if text[0].value == type:
+        yield text
+    else:
+        for subtext in text[5:]:
+            for line in get_subexprs(subtext, type):
+                yield line
+
+def get_lines(text):
+    return get_subexprs(text, djvu.const.TEXT_ZONE_LINE)
+
+def get_words(text):
+    return get_subexprs(text, djvu.const.TEXT_ZONE_WORD)
+
 is_valid_page_id = re.compile('^[a-zA-Z_+.-]+$').match
 
 query_string = os.getenv('QUERY_STRING', '')
@@ -60,35 +90,7 @@ djvu_file_name = DJVU_FILES.keys()[0]
 djvu_uri = urllib.basejoin(DJVU_BASE_URI, djvu_file_name)
 djvu_file_name = os.path.join(DJVU_BASE_LOCAL_DIR, djvu_file_name)
 
-djvused = subprocess.Popen(
-    ['djvused', '-e', 'select %s; print-txt' % page, djvu_file_name],
-    stdout=subprocess.PIPE, stderr=subprocess.PIPE
-)
-try:
-    text = djvu.sexpr.Expression.from_stream(djvused.stdout)
-except:
-    rc = djvused.wait()
-    if rc != 0:
-        raise DjVuSedError(djvused.stderr.readline().strip())
-
-def get_subexprs(text, type):
-    if not isinstance(text, djvu.sexpr.ListExpression):
-        return
-    if len(text) < 5:
-        return
-    if text[0].value == type:
-        yield text
-    else:
-        for subtext in text[5:]:
-            for line in get_subexprs(subtext, type):
-                yield line
-
-def get_lines(text):
-    return get_subexprs(text, djvu.const.TEXT_ZONE_LINE)
-
-def get_words(text):
-    return get_subexprs(text, djvu.const.TEXT_ZONE_WORD)
-
+text = get_text(djvu_file_name, page)
 if y0 is not None and x0 is not None:
     for y, line in enumerate(get_lines(text)):
         if y != y0:
