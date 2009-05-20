@@ -18,7 +18,7 @@ div.error {
     <p><label for='f'>DjVu document:</label>
     <select id='f' name='f'>
     {% for file, description in files.iteritems %}
-    <option value='{{file}}'>{{description}}</option>
+    <option value='{{file}}'{% ifequal file fields.f.value %} selected='selected'{% endifequal %}>{{description}}</option>
     {% endfor %}
     </select>
     </p>
