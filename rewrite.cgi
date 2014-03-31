@@ -23,7 +23,7 @@ DJVU_FILES = {
 }
 HTML_TEMPLATE = os.path.join(sys.path[0], 'rewrite-template.html')
 
-sys.path.extend(glob.glob(os.path.expanduser('~/lib/python%d.%d/site-packages/*/' % sys.version_info[:2])))
+sys.path += [os.path.expanduser('~/lib/python%d.%d/site-packages/' % sys.version_info[:2])]
 
 import djvu.sexpr
 import djvu.const
