@@ -13,9 +13,7 @@ import subprocess
 import sys
 import urllib
 
-import django.conf
-import django.template as template
-django.conf.settings.configure()
+import jinja2
 
 user = getpass.getuser()
 
@@ -39,8 +37,12 @@ class DjVuSedError(Exception):
             message = message[4:]
         Exception.__init__(self, message)
 
+class SilentUndefined(jinja2.Undefined):
+    def _fail_with_undefined_error(self, *args, **kwargs):
+        return ''
+
 with open(HTML_TEMPLATE, 'rt') as file:
-    html_template = template.Template(file.read())
+    html_template = jinja2.Template(file.read(), autoescape=True, undefined=SilentUndefined)
 
 def get_text(djvu_file_name, page):
     djvused = subprocess.Popen(
@@ -137,8 +139,8 @@ try:
 except Exception as exception:
     if isinstance(exception, NothingToRewrite):
         exception = None
-    context = template.Context(dict(exception=exception, files=DJVU_FILES, fields=cgi.FieldStorage()))
-    content = html_template.render(context).encode('UTF-8')
+    context = dict(exception=exception, files=DJVU_FILES, fields=cgi.FieldStorage())
+    content = html_template.render(**context).encode('UTF-8')
     print('Content-Type: text/html; charset=UTF-8')
     print()
     print(content)

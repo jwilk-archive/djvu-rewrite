@@ -17,8 +17,8 @@ div.error {
 <form method='get' action='rewrite.cgi'>
     <p><label for='f'>DjVu document:</label>
     <select id='f' name='f'>
-    {% for file, description in files.iteritems %}
-    <option value='{{file}}'{% ifequal file fields.f.value %} selected='selected'{% endifequal %}>{{description}}</option>
+    {% for file, description in files.iteritems() %}
+    <option value='{{file}}'{% if file == fields.f.value %} selected='selected'{% endif %}>{{description}}</option>
     {% endfor %}
     </select>
     </p>
