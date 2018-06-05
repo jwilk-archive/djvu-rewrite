@@ -22,7 +22,8 @@ user = getpass.getuser()
 DJVU_BASE_LOCAL_DIR = os.path.expanduser('~/public_html/')
 DJVU_BASE_URI = '/~{user}/'.format(user=user)
 DJVU_FILES = {
-    'papers/thesis/thesis.djvu': 'Rozbudowa etc.'
+    # 'path/to/djvu/file.djvu': 'Document title',
+    # ...
 }
 HTML_TEMPLATE = os.path.join(sys.path[0], 'rewrite-template.html')
 
