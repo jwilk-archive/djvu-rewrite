@@ -6,11 +6,12 @@ import cgitb
 cgitb.enable()
 
 import cgi
-import re
 import os
-import sys
+import re
 import subprocess
+import sys
 import urllib
+
 import django.conf
 import django.template as template
 django.conf.settings.configure()
