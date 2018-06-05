@@ -7,6 +7,7 @@ cgitb.enable()
 
 import cgi
 import getpass
+import io
 import os
 import re
 import subprocess
@@ -41,8 +42,9 @@ class SilentUndefined(jinja2.Undefined):
     def _fail_with_undefined_error(self, *args, **kwargs):
         return ''
 
-with open(HTML_TEMPLATE, 'rt') as file:
-    html_template = jinja2.Template(file.read(), autoescape=True, undefined=SilentUndefined)
+with io.open(HTML_TEMPLATE, 'rt', encoding='UTF-8') as file:
+    html_template = file.read()
+html_template = jinja2.Template(html_template, autoescape=True, undefined=SilentUndefined)
 
 def get_text(djvu_file_name, page):
     djvused = subprocess.Popen(
