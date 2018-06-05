@@ -128,7 +128,7 @@ try:
         else:
             raise IndexError('Line number out of range')
     uri = '%s?%s' % (djvu_uri, '&'.join(djvuopts))
-except Exception, exception:
+except Exception as exception:
     if isinstance(exception, NothingToRewrite):
         exception = None
     context = template.Context(dict(exception=exception, files=DJVU_FILES, fields=cgi.FieldStorage()))
