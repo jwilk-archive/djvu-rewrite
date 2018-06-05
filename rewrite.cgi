@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+from __future__ import print_function
+
 import cgitb
 cgitb.enable()
 
@@ -132,14 +134,14 @@ except Exception as exception:
         exception = None
     context = template.Context(dict(exception=exception, files=DJVU_FILES, fields=cgi.FieldStorage()))
     content = html_template.render(context).encode('UTF-8')
-    print 'Content-Type: text/html; charset=UTF-8'
-    print
-    print content
+    print('Content-Type: text/html; charset=UTF-8')
+    print()
+    print(content)
 else:
-    print 'Status: 303 See Other'
-    print 'Content-Type: text/plain'
-    print 'Location: %s' % uri
-    print
-    print 'See %s' % uri
+    print('Status: 303 See Other')
+    print('Content-Type: text/plain')
+    print('Location: %s' % uri)
+    print()
+    print('See %s' % uri)
 
 # vim:ts=4 sts=4 sw=4 et
