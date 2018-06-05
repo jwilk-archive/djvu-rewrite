@@ -7,7 +7,6 @@ import cgi
 import re
 import os
 import sys
-import glob
 import subprocess
 import urllib
 import django.conf
