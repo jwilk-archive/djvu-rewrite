@@ -51,7 +51,8 @@ def get_text(djvu_file_name, page):
     )
     try:
         return djvu.sexpr.Expression.from_stream(djvused.stdout)
-    except:
+    finally:
+        djvused.stdout.close()
         rc = djvused.wait()
         if rc != 0:
             raise DjVuSedError(djvused.stderr.readline().strip())
