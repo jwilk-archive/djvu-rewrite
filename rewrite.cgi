@@ -6,6 +6,7 @@ import cgitb
 cgitb.enable()
 
 import cgi
+import getpass
 import os
 import re
 import subprocess
@@ -16,8 +17,10 @@ import django.conf
 import django.template as template
 django.conf.settings.configure()
 
+user = getpass.getuser()
+
 DJVU_BASE_LOCAL_DIR = os.path.expanduser('~/public_html/')
-DJVU_BASE_URI = '/~jw209508/'
+DJVU_BASE_URI = '/~{user}/'.format(user=user)
 DJVU_FILES = {
     'papers/thesis/thesis.djvu': 'Rozbudowa etc.'
 }
